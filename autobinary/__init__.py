@@ -42,7 +42,7 @@ from autobinary.uplift_utils import get_uplift
 
 from autobinary.auto_viz import TargetPlot
 
-from autobinary.uplift_utils import WingUplift
+from autobinary.uplift_utils import UpliftCalibration
 
 __version__ = '1.0.5'
 
