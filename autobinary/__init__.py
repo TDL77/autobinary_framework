@@ -44,6 +44,8 @@ from autobinary.auto_viz import TargetPlot
 
 from autobinary.uplift_utils import UpliftCalibration
 
+from autobinary.uplift_utils import WingUplift
+
 __version__ = '1.0.5'
 
 __author__ = '''

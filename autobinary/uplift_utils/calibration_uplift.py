@@ -1,4 +1,5 @@
 import pandas as pd
+import pandasql as ps
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -21,30 +22,23 @@ class UpliftCalibration:
         ## treatment - название столбца флага коммуникации
         ## score - название столбца со скорром
         ## ascending - направление калибровки
-        
-        if self.strategy == 'all':
-            df1 = self.df
-        elif self.strategy == 'trt':
-            df1 = self.df[self.df[treatment] == 1]
-        elif self.strategy == 'ctrl':
-            df1 = self.df[self.df[treatment] == 0]
 
         # учимся на части выборки    
             
         if self.type_calib=='bins':
-            df1 = df1.sort_values(score, ascending=False).reset_index(drop=True)
-
-            percentiles1 = [round(p * 100 / self.bins) for p in range(1, self.bins + 1)]
-
-            percentiles = [f"0-{percentiles1[0]}"] + \
-                [f"{percentiles1[i]}-{percentiles1[i + 1]}" for i in range(len(percentiles1) - 1)]
+            df1 = self.df.sort_values(score, ascending=False).reset_index(drop=True)
 
             # возвращается кортеж:
             _, self.list_bounders = pd.qcut(
                 df1[score],
                 q=self.bins,
                 precision=10,
-                retbins=True)
+                retbins=True) 
+
+            percentiles1 = [round(p * 100 / len(self.list_bounders)) for p in range(2, len(self.list_bounders)+1)]
+
+            percentiles = [f"0-{percentiles1[0]}"] + \
+            [f"{percentiles1[i]}-{percentiles1[i + 1]}" for i in range(len(percentiles1)-1)]
 
             if self.type_score == 'uplift':
                 self.list_bounders[0] = -100
@@ -54,11 +48,18 @@ class UpliftCalibration:
                 self.list_bounders[len(self.list_bounders)-1] = 1            
         
         else:
-            
+            if self.strategy == 'all':
+                df1 = self.df
+            elif self.strategy == 'trt':
+                df1 = self.df[self.df[treatment] == 1]
+            elif self.strategy == 'ctrl':
+                df1 = self.df[self.df[treatment] == 0]
+               
             self.woe.fit(df1[[score]], df1[[target]])
 
             # преобразовываем всю изначальную выборку
             new_df1 = self.woe.transform(self.df[[score]])
+            df1 = pd.concat([self.df, new_df1], axis=1)
 
             self.list_bounders = self.woe.optimal_edges.tolist()
             if self.type_score == 'uplift':
@@ -68,7 +69,7 @@ class UpliftCalibration:
                 self.list_bounders[0] = 0
                 self.list_bounders[len(self.list_bounders)-1] = 1  
 
-            percentiles1 = [round(p * 100 / len(self.list_bounders)-1) for p in range(1, len(self.list_bounders))]
+            percentiles1 = [round(p * 100 / len(self.list_bounders)) for p in range(2, len(self.list_bounders)+1)]
 
             percentiles = [f"0-{percentiles1[0]}"] + \
                 [f"{percentiles1[i]}-{percentiles1[i + 1]}" for i in range(len(percentiles1)-1)]
@@ -83,47 +84,70 @@ class UpliftCalibration:
         df1['right_b'] = df1['interval'].apply(lambda x: x.right)
         
         df1['interval'] = df1['interval'].astype(str)
-        df_trt = df1[df1[treatment]==1]
-        df_ctrl = df1[df1[treatment]==0]
-        
-        # Группировка и расчет количества наблюдений с коммуникацией/без коммуникации/в общем относительно бинов
-        trt = df_trt.reset_index().\
-        groupby(['interval', 'name_interval', 'left_b', 'right_b']).\
-        agg({'index':np.size, target:np.sum, score: np.mean}).\
-        rename(columns={'index':'n_trt',target:'tar1_trt',score:'mean_pred_trt'}).\
-        reset_index().dropna()
-        trt['tar0_trt'] = trt.n_trt-trt.tar1_trt
+        final = ps.sqldf(
+            f'''
+            WITH trt AS (
+                SELECT interval, name_interval, left_b, right_b,
+                    count(*) AS n_trt, SUM(target) AS tar1_trt, 
+                    count({target})-sum({target}) AS tar0_trt, AVG({score}) AS mean_pred_trt
+                FROM df1
+                WHERE treatment = 1
+                GROUP BY interval, name_interval, left_b, right_b
+                ORDER BY interval
+            ),
 
-        ctrl = df_ctrl.reset_index().\
-        groupby(['interval', 'name_interval', 'left_b', 'right_b']).\
-        agg({'index':np.size, target:np.sum, score: np.mean}).\
-        rename(columns={'index':'n_ctrl',target:'tar1_ctrl',score:'mean_pred_ctrl'}).\
-        reset_index().dropna()
-        ctrl['tar0_ctrl'] = ctrl.n_ctrl-ctrl.tar1_ctrl
+            ctrl AS (
+                SELECT interval, name_interval, left_b, right_b, 
+                    count(*) AS n_ctrl, SUM({target}) AS tar1_ctrl, 
+                    COUNT({target})-SUM({target}) AS tar0_ctrl, AVG({score}) AS mean_pred_ctrl
+                FROM df1
+                WHERE treatment = 0
+                GROUP BY interval, name_interval, left_b, right_b
+                ORDER BY interval
+            ),
 
-        all_t = pd.DataFrame({'interval':'total',
-                                'n_trt':len(df_trt),
-                                'tar1_trt':df_trt[target].sum(),
-                                'tar0_trt':len(df_trt)-df_trt[target].sum()}, index=[0]).\
-        merge(pd.DataFrame({'interval':'total',
-                                'n_ctrl':len(df_ctrl),
-                                'tar1_ctrl':df_ctrl[target].sum(),
-                                'tar0_ctrl':len(df_ctrl)-df_ctrl[target].sum()}, index=[0]),how='left', on='interval')
+            all_trt AS (
+                SELECT 'total' AS interval, count(*) AS n_trt, SUM({target}) AS tar1_trt, 
+                    count({target})-sum({target}) AS tar0_trt
+                FROM df1
+                WHERE treatment = 1
 
-        final = trt.merge(ctrl.drop(columns=['left_b','right_b']), how='left', on=['interval','name_interval']).\
-        append(all_t)[['interval', 'name_interval', 'left_b', 'right_b', 'n_trt', 'tar1_trt',
-               'tar0_trt', 'n_ctrl', 'tar1_ctrl', 'tar0_ctrl']]
+            ),
+
+            all_ctrl AS (
+                SELECT 'total' AS interval, count(*) AS n_ctrl, SUM({target}) AS tar1_ctrl, 
+                    COUNT({target})-SUM({target}) AS tar0_ctrl, AVG({score}) AS mean_pred_ctrl
+                FROM df1
+                WHERE treatment = 0
+            ),
+
+            all_t AS (
+                SELECT 'total' AS interval, 'total' AS name_interval, 'total' AS left_b, 'total' AS right_b, 
+                    all_trt.n_trt, all_trt.tar1_trt, all_trt.tar0_trt, 
+                    all_ctrl.n_ctrl, all_ctrl.tar1_ctrl, all_ctrl.tar0_ctrl
+                FROM all_trt
+                LEFT JOIN all_ctrl
+                    ON all_trt.interval = all_ctrl.interval
+            )
+
+            SELECT trt.interval, trt.name_interval, trt.left_b, trt.right_b, 
+                trt.n_trt, trt.tar1_trt, trt.tar0_trt, 
+                ctrl.n_ctrl, ctrl.tar1_ctrl, ctrl.tar0_ctrl
+            FROM trt
+            LEFT JOIN ctrl
+                ON trt.interval = ctrl.interval
+                AND trt.name_interval = ctrl.name_interval
+
+            UNION
+
+            SELECT * 
+            FROM all_t
+        '''
+        )
         
-        
-        # Расчитываем аплифт
         final['resp_rate_trt'] = final['tar1_trt']/final['n_trt']
         final['resp_rate_ctrl'] = final['tar1_ctrl']/final['n_ctrl']
         final['real_uplift'] = final['resp_rate_trt'] - final['resp_rate_ctrl']
-
-        sort = final[final['interval'] != 'total'].sort_values(['left_b'], ascending=ascending).reset_index(drop=True)
-        total = final[final['interval'] == 'total'].reset_index(drop=True)
-
-        final = pd.concat([sort, total], axis=0).reset_index(drop=True)
 
         self.df = None
         self.final = final.to_dict()
