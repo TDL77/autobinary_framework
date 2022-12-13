@@ -4,3 +4,4 @@ from autobinary.trees.auto_pdp import PlotPDP
 from autobinary.trees.auto_permutation import PermutationSelection
 from autobinary.trees.auto_selection import AutoSelection
 from autobinary.trees.target_permutation import TargetPermutationSelection
+from autobinary.trees.solo_calibration import FinalModel

@@ -26,6 +26,7 @@ from autobinary.other_methods import StratifiedGroupKFold
 from autobinary.trees import AutoTrees
 from autobinary.trees import PermutationSelection, TargetPermutationSelection
 from autobinary.trees import AutoSelection
+from autobinary.trees import FinalModel
 from autobinary.trees import PlotShap, PlotPDP
 
 from autobinary.utils import get_img_tag, df_html
