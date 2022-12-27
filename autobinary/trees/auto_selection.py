@@ -95,12 +95,7 @@ class AutoSelection(AutoTrees):
 
             self.main_features = num_stack+cat_stack
             
-            if len(num_stack)==0:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='cat')
-            elif len(cat_stack)==0:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='num')
-            else:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='all')
+            self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack)
             
             self.model_fit_cv(strat=strat, groups=groups)
             
@@ -210,13 +205,8 @@ class AutoSelection(AutoTrees):
             cat_stack = list(filter(lambda x: x in self.cat_columns, features_stack))            
             
             self.main_features = num_stack+cat_stack
-            
-            if len(num_stack)==0:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='cat')
-            elif len(cat_stack)==0:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='num')
-            else:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='all')
+
+            self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack)
             
             self.model_fit_cv(strat=strat, groups=groups)
             
@@ -368,13 +358,8 @@ class AutoSelection(AutoTrees):
             cat_stack = list(filter(lambda x: x in self.cat_columns, features_stack))            
             
             self.main_features = num_stack+cat_stack
-            
-            if len(num_stack)==0:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='cat')
-            elif len(cat_stack)==0:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='num')
-            else:
-                self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack,kind='all')
+
+            self.main_prep_pipe = self.base_pipe(num_columns=num_stack,cat_columns=cat_stack)
             
             self.model_fit_cv(strat=strat, groups=groups)
             
@@ -464,7 +449,7 @@ class AutoSelection(AutoTrees):
         
         
         # Mean importances
-
+        print('Соло модель с факторами кросс - валидации')
         self.main_features = self.num_columns+self.cat_columns
         self.main_prep_pipe = self.base_pipe(num_columns=self.num_columns, cat_columns=self.cat_columns)
         cnt_fi = len(self.main_features)
@@ -479,10 +464,12 @@ class AutoSelection(AutoTrees):
         method.append('Mean_importance')
         cnt_features.append(cnt_fi)
         cross_metrics.append(np.mean(self.mean_metric_folds))
-        oof_metrics.append(metric_fi)        
+        oof_metrics.append(metric_fi)
+        print()
 
         # Forward selection
         if self.forward:
+            print('Соло модель с факторами forward selection')
             main_features = self.fselection_res['num_features_stack']+self.fselection_res['cat_features_stack']
             self.main_prep_pipe = self.base_pipe(num_columns=self.fselection_res['num_features_stack'], cat_columns=self.fselection_res['cat_features_stack'])
             cnt_forw = len(main_features)
@@ -497,10 +484,12 @@ class AutoSelection(AutoTrees):
             method.append('Forward_selection')
             cnt_features.append(cnt_forw)
             cross_metrics.append(self.fselection_res['metric_alt'])
-            oof_metrics.append(metric_forw) 
+            oof_metrics.append(metric_forw)
+            print()
 
         # Backward selection
         if self.backward:
+            print('Соло модель с факторами backward selection')
             main_features = self.bselection_res['num_features_stack']+self.bselection_res['cat_features_stack']
             self.main_prep_pipe = self.base_pipe(num_columns=self.bselection_res['num_features_stack'], cat_columns=self.bselection_res['cat_features_stack'])
             cnt_back = len(main_features)
@@ -515,10 +504,12 @@ class AutoSelection(AutoTrees):
             method.append('Backward_selection')
             cnt_features.append(cnt_back)
             cross_metrics.append(self.bselection_res['metric_alt'])
-            oof_metrics.append(metric_back) 
+            oof_metrics.append(metric_back)
+            print()
 
         # Deep backward selection
         if self.dbackward:
+            print('Соло модель с факторами deep backward selection')
             main_features = self.deep_bselection_res['num_features_stack']+self.deep_bselection_res['cat_features_stack']
             self.main_prep_pipe = self.base_pipe(num_columns=self.deep_bselection_res['num_features_stack'], cat_columns=self.deep_bselection_res['cat_features_stack'])
             cnt_dback = len(main_features)
@@ -533,7 +524,8 @@ class AutoSelection(AutoTrees):
             method.append('Deep_backward_selection')
             cnt_features.append(cnt_dback)
             cross_metrics.append(self.deep_bselection_res['metric_alt'])
-            oof_metrics.append(metric_dback) 
+            oof_metrics.append(metric_dback)
+            print()
 
         result_df = pd.DataFrame({'Метод отбора':method,'Количество факторов':cnt_features,f'Метрика {self.main_metric} на кросс-валидации':cross_metrics,f'Метрика {self.main_metric} на отложенном множестве':oof_metrics})
         

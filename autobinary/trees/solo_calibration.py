@@ -68,21 +68,10 @@ class FinalModel():
 
         else:
 
-            if len(self.num_columns)>0 and len(self.cat_columns)>0:
-                prep_pipe = self.base_pipe(
-                    num_columns=self.num_columns,
-                    cat_columns=self.cat_columns,
-                    kind='all')
 
-            elif len(self.num_columns)==0 and len(self.cat_columns)>0:
-                prep_pipe = self.base_pipe(
-                    cat_columns=self.cat_columns,
-                    kind='cat')
-
-            elif len(self.num_columns)>0 and len(self.cat_columns)==0:
-                prep_pipe = self.base_pipe(
-                    num_columns=self.num_columns,
-                    kind='num')
+            prep_pipe = self.base_pipe(
+                num_columns=self.num_columns,
+                cat_columns=self.cat_columns)
 
             self.prep_pipe = prep_pipe.fit(X_train[self.features],y_train)
 

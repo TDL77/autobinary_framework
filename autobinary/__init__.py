@@ -24,7 +24,7 @@ from autobinary.libraries import (
 from autobinary.other_methods import StratifiedGroupKFold
 
 from autobinary.trees import AutoTrees
-from autobinary.trees import PermutationSelection, TargetPermutationSelection
+from autobinary.trees import NansAnalysis, PrimarySelection, TargetPermutationSelection
 from autobinary.trees import AutoSelection
 from autobinary.trees import FinalModel
 from autobinary.trees import PlotShap, PlotPDP
@@ -47,7 +47,7 @@ from autobinary.uplift_utils import UpliftCalibration
 
 from autobinary.uplift_utils import WingUplift
 
-__version__ = '1.0.5'
+__version__ = '1.0.6'
 
 __author__ = '''
     vasily_sizov, 
