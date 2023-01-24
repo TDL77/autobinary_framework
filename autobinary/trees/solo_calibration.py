@@ -108,9 +108,9 @@ class FinalModel():
     def predict(self, X: pd.DataFrame):
 
         if self.task_type=='classification':
-            predict = self.model.predict_proba(self.prep_pipe.transform(X))[:, 1]
+            predict = self.model.predict_proba(self.prep_pipe.transform(X[self.features]))[:, 1]
         else:
-            predict = self.model.predict(self.prep_pipe.transform(X))
+            predict = self.model.predict(self.prep_pipe.transform(X[self.features]))
 
         return predict
 
@@ -123,7 +123,7 @@ class FinalModel():
 
             res = pd.DataFrame()
             res['target'] = y
-            res['proba'] = self.model.predict_proba(self.prep_pipe.transform(X))[:, 1]
+            res['proba'] = self.model.predict_proba(self.prep_pipe.transform(X[self.features]))[:, 1]
             res = res.sort_values('proba', ascending=False).reset_index(drop=True)
 
             metr = BalanceCover(res, target='target')
@@ -142,7 +142,7 @@ class FinalModel():
 
             res = pd.DataFrame()
             res['target'] = y
-            res['proba'] = self.model.predict_proba(self.prep_pipe.transform(X))[:, 1]
+            res['proba'] = self.model.predict_proba(self.prep_pipe.transform(X[self.features]))[:, 1]
             res = res.sort_values('proba', ascending=False).reset_index(drop=True)
 
             metr = BalanceCover(res, target='target')
@@ -154,7 +154,7 @@ class FinalModel():
 
     def calibration(self,X_calib: pd.DataFrame, y_calib: pd.DataFrame, n_bins: int=10):
 
-        scores_base = self.model.predict_proba(self.prep_pipe.transform(X_calib))[:,1]
+        scores_base = self.model.predict_proba(self.prep_pipe.transform(X_calib[self.features]))[:,1]
 
         self.model_sigm = CalibratedClassifierCV(
             base_estimator=self.model,
@@ -196,7 +196,7 @@ class FinalModel():
     def calibration_compare(self, X_calib: pd.DataFrame, y_calib: pd.DataFrame, calib_compare:str='scores_iso'):
 
         calib_df = pd.DataFrame()
-        calib_df['scores_base'] = self.model.predict_proba(self.prep_pipe.transform(X_calib))[:,1]
+        calib_df['scores_base'] = self.model.predict_proba(self.prep_pipe.transform(X_calib[self.features]))[:,1]
         calib_df['scores_sigm'] = self.model_sigm.predict_proba(self.prep_pipe.transform(X_calib[self.features]))[:,1]
         calib_df['scores_iso'] = self.model_iso.predict_proba(self.prep_pipe.transform(X_calib[self.features]))[:,1]
         calib_df['target'] = y_calib.reset_index(drop=True)

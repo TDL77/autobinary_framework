@@ -47,7 +47,7 @@ from autobinary.uplift_utils import UpliftCalibration
 
 from autobinary.uplift_utils import WingUplift
 
-__version__ = '1.0.6'
+__version__ = '1.0.7'
 
 __author__ = '''
     vasily_sizov, 
