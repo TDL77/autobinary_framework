@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import pickle
 
 from xgboost import XGBClassifier, XGBRegressor
@@ -8,6 +9,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
 from ..custom_metrics.balance_cover import BalanceCover
+from ..custom_metrics.regression_metrics import RegressionMetrics
 from ..utils.folders import create_folder
 from sklearn.calibration import calibration_curve, CalibratedClassifierCV
 from sklearn.metrics import brier_score_loss, roc_auc_score, log_loss
@@ -114,7 +116,7 @@ class FinalModel():
 
         return predict
 
-    def balance_cover_1(self, X: pd.DataFrame, y: pd.DataFrame, step: int, end: int):
+    def balance_cover_1(self, X: pd.DataFrame, y: pd.DataFrame, step: int, end: int, save=False, path='./', name=''):
 
         if self.task_type!='classification':
             print('Метрика только для классификации')
@@ -126,14 +128,14 @@ class FinalModel():
             res['proba'] = self.model.predict_proba(self.prep_pipe.transform(X[self.features]))[:, 1]
             res = res.sort_values('proba', ascending=False).reset_index(drop=True)
 
-            metr = BalanceCover(res, target='target')
+            metr = BalanceCover(res, target='target', save=save, path=path, name=name)
             metr.calc_scores(step, end)
             metr.sample_describe()
             metr.plot_scores()
-
+            
             return metr.output
 
-    def balance_cover_2(self, X: pd.DataFrame, y: pd.DataFrame, step: int, end: int):
+    def balance_cover_2(self, X: pd.DataFrame, y: pd.DataFrame, step: int, end: int, save=False, path='./', name=''):
 
         if self.task_type!='classification':
             print('Метрика только для классификации')
@@ -145,12 +147,44 @@ class FinalModel():
             res['proba'] = self.model.predict_proba(self.prep_pipe.transform(X[self.features]))[:, 1]
             res = res.sort_values('proba', ascending=False).reset_index(drop=True)
 
-            metr = BalanceCover(res, target='target')
+            metr = BalanceCover(res, target='target', save=save, path=path, name=name)
             metr.calc_scores_2(step, end)
             metr.sample_describe()
             metr.plot_scores_2()
 
             return metr.output2
+        
+    def plot_prediction(self, X: pd.DataFrame, y: pd.DataFrame, save=False, path='./', name=''):
+
+        if self.task_type!='regression':
+            print('Метрика только для регрессии')
+
+        else:        
+        
+            res = pd.DataFrame()
+            res['target'] = y
+            res['prediction'] = self.model.predict(self.prep_pipe.transform(X[self.features]))
+            metr = RegressionMetrics(res, target='target', save=save, path=path, name=name)
+            
+            metr.plot_prediction()
+            
+    def metric_bin(self, X: pd.DataFrame, y: pd.DataFrame, n_bins: int=5, metric: str='mape', save=False, path='./', name=''):
+        
+        if self.task_type!='regression':
+            print('Метрика только для регрессии')
+            
+        else:        
+        
+            res = pd.DataFrame()
+            res['target'] = y
+            res['prediction'] = self.model.predict(self.prep_pipe.transform(X[self.features]))
+            metr = RegressionMetrics(res, target='target', save=save, path=path, name=name)
+            
+            out = metr.m_bin_table(n_bins=n_bins)[['target','target_range','prediction',metric,f'{metric}_range']].reset_index(drop=True)
+            metr.target_describe()
+            metr.m_bin_plot(metric=metric)
+            
+            return out
 
     def calibration(self,X_calib: pd.DataFrame, y_calib: pd.DataFrame, n_bins: int=10):
 

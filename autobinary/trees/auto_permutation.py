@@ -22,18 +22,18 @@ from collections import ChainMap
 
 
 class NansAnalysis():
-
+    
     def __init__(self, df: pd.DataFrame=None):
-
+        
         """
         Описание: Класс NansAnalysis предназначен для анализа пропусков.
-
+        
             df - выборка для проверки.
-
+        
         """
-
+        
         self.df = df
-
+        
     def to_types(self, num_columns: list = None):
 
         """
@@ -41,7 +41,7 @@ class NansAnalysis():
 
             num_columns - список количественных признаков.
         """
-
+        
         self.df.replace([-np.inf, np.inf], np.nan, inplace=True)
         self.df.replace(['-infinity', 'infinity', '+infinity'], np.nan, inplace=True)
         self.df.replace(['-Infinity', 'Infinity', '+Infinity'], np.nan, inplace=True)
@@ -51,7 +51,7 @@ class NansAnalysis():
                 self.df[i] = self.df[i].astype(float)
 
         print('Все бесконечные значения заменены на пропуски, количественные переменные приведены к типу float!')
-
+        
         return self.df
 
     def fit(self, percent: float=0.95, top: int=5):
@@ -61,12 +61,12 @@ class NansAnalysis():
 
             percent - процент при котором столбец исключается из дальнейшего анализа;
             top - топ признаков для табличного представления результата по количеству и доли пропусков в столбце.
-        """
+        """    
 
         null = pd.DataFrame(self.df.isna().sum().reset_index()).rename(columns={'index':'feature',0:'cnt_null'})
         null['share_nans'] = (null.cnt_null/len(self.df)).round(2)
 #        display(null.sort_values('cnt_null', ascending=False).head(top))
-
+        
         self.nans_df = null.sort_values('cnt_null', ascending=False)
 
         feature_not_nan = null[null.cnt_null<=len(self.df)*percent].feature.tolist()
@@ -75,12 +75,12 @@ class NansAnalysis():
         print('==================================================')
         print(f'Удалены столбцы, имеющие долю пропусков > {percent*100} %, количество оставшихся : {len(feature_not_nan)} ')
 
-        return feature_not_nan
+        return feature_not_nan    
 
 
 class PrimarySelection():
 
-    def __init__(self, df_train: pd.DataFrame=None, base_pipe: object=None, num_columns: list=None, cat_columns: list=None, target: str=None,
+    def __init__(self, df_train: pd.DataFrame=None, base_pipe: object=None, num_columns: list=None, cat_columns: list=None, target: str=None, 
                  model_type: str='xgboost', model_params: dict=None, task_type: str='classification', random_state: int=42):
 
         """
@@ -88,7 +88,7 @@ class PrimarySelection():
             1) corr_analysis - корреляционный анализ;
             2) depth_analysis - анализ относительно глубины;
             3) permutation_analysis - анализ случайного перемешивания фактора.
-
+        
         df_train - обучающее множество;
         prep_pipe - конвейер предобработки признаков;
         num_columns / cat_columns - количественные и категориальные признаки соответственно;
@@ -98,7 +98,7 @@ class PrimarySelection():
         task_type - тип задачи 'classification' / 'regression' / 'multiclassification';
         random_state - параметр воспроизводимости результата (контроль).
         """
-
+        
         self.df_train = df_train
         self.base_pipe = base_pipe
         self.num_columns = num_columns
@@ -107,11 +107,11 @@ class PrimarySelection():
         self.model_type = model_type
         self.task_type = task_type
         self.random_state = random_state
-
+        
         if model_params is None:
-
+            
             if self.task_type == 'classification':
-
+            
                 if model_type == 'xgboost':
                     self.model_params = clf_params_xgb
                 elif model_type == 'catboost':
@@ -122,9 +122,9 @@ class PrimarySelection():
                     self.model_params = clf_params_dt
                 elif model_type == 'randomforest':
                     self.model_params = clf_params_rf
-
+                    
             elif self.task_type == 'multiclassification':
-
+            
                 if model_type == 'xgboost':
                     self.model_params = mclf_params_xgb
                 elif model_type == 'catboost':
@@ -135,9 +135,9 @@ class PrimarySelection():
                     self.model_params = mclf_params_dt
                 elif model_type == 'randomforest':
                     self.model_params = mclf_params_rf
-
+                    
             elif self.task_type == 'regression':
-
+            
                 if model_type == 'xgboost':
                     self.model_params = reg_params_xgb
                 elif model_type == 'catboost':
@@ -148,45 +148,45 @@ class PrimarySelection():
                     self.model_params = reg_params_dt
                 elif model_type == 'randomforest':
                     self.model_params = reg_params_rf
-
+            
         else:
             self.model_params = model_params
-
+        
         print('Класс первичного отбора факторов инициализирован!')
-
+        
         self.random_feature = np.random.randn(len(self.df_train))
-
+        
     def _preprocessing(self, X_tr: pd.DataFrame = None, y_tr: pd.DataFrame=None, X_te: pd.DataFrame = None,
                        num_columns: list=None, cat_columns: list=None):
-
+        
         """
         Описание: Локальная функция _preprocessing предназначена для трансформации количественных и категориальных факторов.
-
+            
             X_tr - обучающее множество;
             y_tr - целевая переменная обучающего множества;
             X_te - тестовое множество;
             num_columns / cat_columns - количественные и категориальные признаки соответственно.
         """
-
+        
         X_tr.reset_index(drop=True,inplace=True)
         y_tr.reset_index(drop=True,inplace=True)
-
+        
         prep_pipe = self.base_pipe(num_columns = num_columns,
                                    cat_columns = cat_columns)
-
+        
         prep_pipe.fit(X_tr, y_tr)
 
         X_tr = prep_pipe.transform(X_tr)
-
+        
         if X_te is None:
             return X_tr
         else:
-
+            
             X_te.reset_index(drop=True,inplace=True)
             X_te = prep_pipe.transform(X_te)
-
+            
             return X_tr, X_te
-
+        
     def _m_gini(self, y_true,y_pred):
 
         n_class = y_true.nunique()
@@ -204,34 +204,34 @@ class PrimarySelection():
         Описание: Функция get_f_metric предназначена для расчета метрики по признаку.
 
             df - выборка.
-        """
+        """       
 
         try:
             if task_type=='classification':
-
+                
                 return (2*roc_auc_score(df.iloc[:,0],df.iloc[:,1])-1)*100
 
-            elif task_type=='multiclassification':
-
+            elif task_type=='multiclassification': 
+                
                 return self._m_gini(df.iloc[:,0],df.iloc[:,1])
 
             elif task_type=='regression':
-
+                
                 return r2_score(df.iloc[:,0],df.iloc[:,1])
 
         except:
-            return 0
-
+            return 0 
+        
     def _get_features_metric(self, df, task_type):
 
         """
         Описание: Функция get_features_metric предназначена для расчета метрики по всем признакам и представляет словарь 'Признак - значение метрики'.
 
             df - выборка.
-        """
+        """       
 
         return {f: self._get_f_metric(df[[df.columns[0],f]], task_type) for f in list(df.columns[1:])}
-
+    
     def _permute(self, col, model: object, X: pd.DataFrame, y: pd.DataFrame, n_iter: int, metric=None, higher_is_better: bool=True, task_type: str='classification', random_state: int=None):
 
         """
@@ -249,7 +249,7 @@ class PrimarySelection():
         """
 
         d = {col: []}
-        if task_type=='classification':
+        if task_type=='classification':       
             base_score = metric(y, model.predict_proba(X)[:, 1])
         else:
             base_score = metric(y, model.predict(X))
@@ -270,7 +270,7 @@ class PrimarySelection():
         return d
 
     def _kib_permute(self, model: object, X: pd.DataFrame, y: pd.DataFrame,
-                     metric=None, n_iter: int=5, n_jobs: int=-1, higher_is_better: bool=True,
+                     metric=None, n_iter: int=5, n_jobs: int=-1, higher_is_better: bool=True, 
                      task_type: str='classification', random_state: int=None):
 
         """
@@ -286,10 +286,10 @@ class PrimarySelection():
             task_type - тип задачи 'classification' / 'regression';
             random_state - параметр воспроизводимости результата (контроль).
 
-        """
+        """    
 
 
-        result = Parallel(n_jobs=n_jobs,max_nbytes='50M')(delayed(self._permute)(col, model, X, y,
+        result = Parallel(n_jobs=n_jobs,max_nbytes='50M')(delayed(self._permute)(col, model, X, y, 
                                                           n_iter, metric, higher_is_better, task_type, random_state) for col in tqdm(X.columns.tolist()))
 
 
@@ -300,10 +300,10 @@ class PrimarySelection():
         return dict_imp
 
     def corr_analysis(self, method='spearman', threshold: float=0.8, drop_with_most_correlations: bool=True):
-
+        
         """
         Описание: Функция corr_analysis предназначена для проведения корреляционного анализа и отборе факторов на основе корреляций и Джини значения.
-
+        
             method - метод расчета корреляций (spearman / pearson);
             threshold - порог при котором фактор является коррелирующим;
             drop_with_most_correlations:
@@ -311,12 +311,12 @@ class PrimarySelection():
                 False - исключается фактор с наименьшим Джини из списка коррелирующих факторов.
             top - топ признаков для табличного представления результата.
         """
-
+            
         df_train = deepcopy(self.df_train)
 
         features = self.num_columns + self.cat_columns
 
-        df_train[features] = self._preprocessing(X_tr = df_train, y_tr = df_train[self.target],
+        df_train[features] = self._preprocessing(X_tr = df_train, y_tr = df_train[self.target], 
                                                  num_columns=self.num_columns, cat_columns=self.cat_columns)
 
         samples = {name: sample for name, sample in {'metric': df_train}.items() if not sample.empty} if df_train is not None else None
@@ -375,16 +375,16 @@ class PrimarySelection():
 
         """
         df_train = deepcopy(self.df_train)
-
+        
         max_depth_grid = list(range(1,max_depth+1))
         fi = list()
-
+        
         num_columns = list(filter(lambda x: x in features, self.num_columns))
         cat_columns = list(filter(lambda x: x in features, self.cat_columns))
-
+        
         X_train = self._preprocessing(X_tr = df_train, y_tr = df_train[self.target],
                                       num_columns=num_columns, cat_columns=cat_columns)
-
+        
         rank_df = pd.DataFrame(X_train.columns,columns=['index']).set_index(['index'])
 
         for max_depth in tqdm_notebook(max_depth_grid):
@@ -468,13 +468,13 @@ class PrimarySelection():
         print('==================================================')
         print(f'Количество признаков после mean importance относительно глубины: {len(self.deth_features_importance)}')
         print(f'Количество признаков после mean rank относительно глубины: {len(self.deth_features_rank)}')
-
-#        display(self.fi.head(top))
+        
+#        print(self.fi.head(top))
 
         return self.deth_features_importance, self.deth_features_rank
-
+    
     def permutation_analysis(self, features: list=None, strat: object=None, group: str=None,
-                             n_iter: int=5, permute_type: str='sklearn',
+                             n_iter: int=5, permute_type: str='sklearn', 
                              n_jobs: int=-1, metric=None, higher_is_better: bool=True):
 
         """
@@ -486,7 +486,7 @@ class PrimarySelection():
             n_jobs - количество ядер (используется только для permutation importance от 'sklearn' и 'kib');
             metric - метрика, для перерасчета качества модели (используется только для permutation importance от 'kib');
             higher_is_better - направленность метрики auc~True / mse~False (используется только для permutation importance от 'kib').
-
+        
         Последовательность действий выполняемых алгоритмом:
 
             1) Происходит обучение алгоритма;
@@ -499,12 +499,12 @@ class PrimarySelection():
             8) Происходит отбор признаков либо по факторам выше значения random_feature на тесте, либо permutation importance значение на тесте > 0.
 
         """
-
+        
         df_train = deepcopy(self.df_train)
-
+        
         self.n_iter_permute = n_iter
         self.permute_type = permute_type
-
+        
         df_train.reset_index(drop=True,inplace=True)
         if group:
             groups = df_train[group]
@@ -516,7 +516,7 @@ class PrimarySelection():
         print(f'Размер обучающего подмножества для Permutation importance: {df_train_perm.shape} ; Среднее значение таргета: {df_train_perm[self.target].mean()}')
         print()
         df_test_perm = df_train.iloc[folds_perm[1][1]].reset_index(drop=True)
-        print(f'Размер тестового подмножества для Permutation importance: {df_test_perm.shape} ; Среднее значение таргета: {df_test_perm[self.target].mean()}')
+        print(f'Размер тестового подмножества для Permutation importance: {df_test_perm.shape} ; Среднее значение таргета: {df_test_perm[self.target].mean()}')  
         print('==================================================')
 
         if self.task_type=='classification' or self.task_type=='multiclassification':
@@ -545,20 +545,20 @@ class PrimarySelection():
             elif self.model_type=='randomforest':
                 model = RandomForestRegressor(**self.model_params)
 
-        num_columns = list(filter(lambda x: x in features, self.num_columns))
+        num_columns = list(filter(lambda x: x in features, self.num_columns)) 
         cat_columns = list(filter(lambda x: x in features, self.cat_columns))
-
+        
         X_train, X_test = self._preprocessing(X_tr = df_train_perm, y_tr = df_train_perm[self.target],
                                               X_te = df_test_perm,
                                               num_columns=num_columns, cat_columns=cat_columns)
-
+        
         X_train['random_feature'] = self.random_feature[folds_perm[1][0]]
         X_test['random_feature'] = self.random_feature[folds_perm[1][1]]
-
-
+        
+        
         model.fit(X_train[features+['random_feature']], df_train_perm[self.target])
         self.permute_feature_names = X_train.columns.tolist()
-
+        
         # Обучение Permutation importance из разных библиотек
         if permute_type=='sklearn':
             result_tr = permutation_importance(model, X_train, df_train_perm[self.target], n_repeats=n_iter, random_state=self.random_state, n_jobs=n_jobs)
@@ -572,7 +572,7 @@ class PrimarySelection():
                        'Perm_Importance_Tr':result_tr.importances_mean[sorted_idx]}
             data_te = {'Feature':feature_names,
                        'Perm_Importance_Te':result_te.importances_mean[sorted_idx]}
-
+                
         elif permute_type=='eli5':
             _, result_tr = get_score_importances(model.score, X_train.values, df_train_perm[self.target], n_iter=n_iter, random_state=self.random_state)
             _, result_te = get_score_importances(model.score, X_test.values, df_test_perm[self.target], n_iter=n_iter, random_state=self.random_state)
@@ -588,7 +588,7 @@ class PrimarySelection():
             result_tr = self._kib_permute(model, X_train, df_train_perm[self.target], metric=metric, n_iter=n_iter, n_jobs=n_jobs, higher_is_better=higher_is_better, task_type=self.task_type, random_state=self.random_state)
             print('Расчет Permutation Importance на Test')
             result_te = self._kib_permute(model, X_test, df_test_perm[self.target], metric=metric, n_iter=n_iter, n_jobs=n_jobs, higher_is_better=higher_is_better, task_type=self.task_type, random_state=self.random_state)
-
+            
             # Создание важности и словаря факторов
             data_tr = {'Feature':result_tr.keys(),
                        'Perm_Importance_Tr':result_tr.values()}
@@ -597,7 +597,7 @@ class PrimarySelection():
 
         # Создание датасета и сортировка PI на тесте по убыванию
         self.pi_df = (pd.DataFrame(data_tr).merge(pd.DataFrame(data_te),how='left',on='Feature')).set_index('Feature').sort_values(by=['Perm_Importance_Te'], ascending=False)
-
+        
         return self.pi_df
 
     def permutation_plot(self, top: int=None, figsize=(10,6)):

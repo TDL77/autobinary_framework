@@ -34,6 +34,7 @@ from autobinary.utils import settings_style
 from autobinary.utils import utils_target_permutation 
 
 from autobinary.custom_metrics import BalanceCover
+from autobinary.custom_metrics import target_dist, RegressionMetrics
 
 from autobinary.pipe import SentColumns, base_pipe
 
@@ -47,7 +48,7 @@ from autobinary.uplift_utils import UpliftCalibration
 
 from autobinary.uplift_utils import WingUplift
 
-__version__ = '1.0.7'
+__version__ = '1.0.9'
 
 __author__ = '''
     vasily_sizov, 

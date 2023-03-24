@@ -31,7 +31,7 @@ class PlotPDP:
             pdp.pdp_plot(pdp_iso, i, plot_lines=True, frac_to_plot=frac_to_plot, x_quantile=True, center=True)
 
             if save:
-                plt.savefig('{}/PDP_{}.png'.format(path,i), bbox_inches="tight")
+                plt.savefig('{}/PDP_{}.png'.format(path,i), dpi=75, bbox_inches='tight')
             plt.show()
         
     def create_interact_plot(self, features: list, save: bool, path: str='./pdp_ice_plots'):
@@ -44,7 +44,7 @@ class PlotPDP:
                                           plot_pdp=True)
         if save:
             try:
-                fig.savefig('{}/PDP_interact_{}.png'.format(path,str(features)), bbox_inches="tight")
+                fig.savefig('{}/PDP_interact_{}.png'.format(path,str(features)), dpi=75, bbox_inches='tight')
             except:
                 print('Директория отсутствует, запустите функцию create_feature_plot с параметров save=True')
                 

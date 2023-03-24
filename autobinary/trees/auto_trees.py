@@ -1065,7 +1065,7 @@ class AutoTrees():
         fig.show()
 
 
-    def get_rocauc_plots(self):
+    def get_rocauc_plots(self, save=False, path='./', name='', dpi=70):
         """
         """
         fig, ax = plt.subplots()
@@ -1086,6 +1086,8 @@ class AutoTrees():
         plt.legend(prop={'size':13}, loc='lower right')
         plt.grid()
         plt.tight_layout()
+        if save:
+            plt.savefig('{}/{}_tr_auc.png'.format(path,name), dpi=70)
         #plt.show()
         
         fig, ax = plt.subplots()
@@ -1106,5 +1108,7 @@ class AutoTrees():
         plt.legend(prop={'size':13}, loc='lower right')
         plt.grid()
         plt.tight_layout()
+        if save:
+            plt.savefig('{}/{}_val_auc.png'.format(path,name), dpi=70)
         #plt.show()
         
