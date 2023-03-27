@@ -189,13 +189,13 @@ class FinalModel():
     def calibration(self,X_calib: pd.DataFrame, y_calib: pd.DataFrame, n_bins: int=10):
 
         scores_base = self.model.predict_proba(self.prep_pipe.transform(X_calib[self.features]))[:,1]
-
+      
         self.model_sigm = CalibratedClassifierCV(
             base_estimator=self.model,
             cv='prefit',
             method='sigmoid')
 
-        self.model_sigm.fit(self.prep_pipe.transform(X_calib),y_calib)
+        self.model_sigm.fit(self.prep_pipe.transform(X_calib[self.features]),y_calib)
         scores_sigm = self.model_sigm.predict_proba(self.prep_pipe.transform(X_calib[self.features]))[:,1]
 
         self.model_iso = CalibratedClassifierCV(
@@ -203,7 +203,7 @@ class FinalModel():
             cv='prefit',
             method='isotonic')
 
-        self.model_iso.fit(self.prep_pipe.transform(X_calib),y_calib)
+        self.model_iso.fit(self.prep_pipe.transform(X_calib[self.features]),y_calib)
         scores_iso = self.model_iso.predict_proba(self.prep_pipe.transform(X_calib[self.features]))[:,1]
 
 
