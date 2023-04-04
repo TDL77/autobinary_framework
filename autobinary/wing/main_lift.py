@@ -136,11 +136,6 @@ class WingOfEvidenceLift(BaseEstimator, TransformerMixin):
 
 
 
-
-
-
-
-
     def transform(self, X, y=None):
         if y is None:
             # bugfix for compatability

@@ -2,7 +2,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from .sent_columns import SentColumns
-from autobinary.libraries.category_encoders.cat_boost import CatBoostEncoder
+from category_encoders import CatBoostEncoder
 
 def base_pipe(num_columns:list=None, cat_columns:list=None, fill_value:float=-1e24):
 
