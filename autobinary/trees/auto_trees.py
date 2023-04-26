@@ -130,7 +130,7 @@ class AutoTrees():
             if self.model_type == 'xgboost':
                 y_pred_train = self.main_estimator.predict(X_train, ntree_limit = self.main_estimator.get_booster().best_iteration)
                 y_pred_test = self.main_estimator.predict(X_test, ntree_limit = self.main_estimator.get_booster().best_iteration)
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 y_pred_train = self.main_estimator.predict(X_train)
                 y_pred_test = self.main_estimator.predict(X_test)
             elif self.model_type == 'lightboost':
@@ -150,7 +150,7 @@ class AutoTrees():
             if self.model_type == 'xgboost':
                 y_pred_train = self.main_estimator.predict_proba(X_train, ntree_limit = self.main_estimator.get_booster().best_iteration)
                 y_pred_test = self.main_estimator.predict_proba(X_test, ntree_limit = self.main_estimator.get_booster().best_iteration)
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 y_pred_train = self.main_estimator.predict_proba(X_train)
                 y_pred_test = self.main_estimator.predict_proba(X_test)
             elif self.model_type == 'lightboost':
@@ -171,7 +171,7 @@ class AutoTrees():
             if self.model_type == 'xgboost':
                 y_pred_train = self.main_estimator.predict_proba(X_train, ntree_limit = self.main_estimator.get_booster().best_iteration)[:, 1]
                 y_pred_test = self.main_estimator.predict_proba(X_test, ntree_limit = self.main_estimator.get_booster().best_iteration)[:, 1]
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 y_pred_train = self.main_estimator.predict_proba(X_train)[:, 1]
                 y_pred_test = self.main_estimator.predict_proba(X_test)[:, 1]
             elif self.model_type == 'lightboost':
@@ -216,7 +216,7 @@ class AutoTrees():
         if self.model_type == 'xgboost':
             y_pred_train = self.main_estimator.predict_proba(X_train, ntree_limit = self.main_estimator.get_booster().best_iteration)[:, 1]
             y_pred_test = self.main_estimator.predict_proba(X_test, ntree_limit = self.main_estimator.get_booster().best_iteration)[:, 1]
-        elif self.model_type == 'catboost':
+        elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
             y_pred_train = self.main_estimator.predict_proba(X_train)[:, 1]
             y_pred_test = self.main_estimator.predict_proba(X_test)[:, 1]
         elif self.model_type == 'lightboost':
@@ -259,7 +259,7 @@ class AutoTrees():
         if self.model_type == 'xgboost':
             y_pred_train = self.main_estimator.predict(X_train, ntree_limit = self.main_estimator.get_booster().best_iteration)
             y_pred_test = self.main_estimator.predict(X_test, ntree_limit = self.main_estimator.get_booster().best_iteration)
-        elif self.model_type == 'catboost':
+        elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
             y_pred_train = self.main_estimator.predict(X_train)
             y_pred_test = self.main_estimator.predict(X_test)
         elif self.model_type == 'lightboost':
@@ -304,7 +304,7 @@ class AutoTrees():
             if self.model_type == 'xgboost':
                 y_pred_train = self.main_estimator.predict(X_train, ntree_limit = self.main_estimator.get_booster().best_iteration)
                 y_pred_test = self.main_estimator.predict(X_test, ntree_limit = self.main_estimator.get_booster().best_iteration)
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 y_pred_train = self.main_estimator.predict(X_train)
                 y_pred_test = self.main_estimator.predict(X_test)
             elif self.model_type == 'lightboost':
@@ -352,7 +352,7 @@ class AutoTrees():
             if self.model_type == 'xgboost':
                 y_pred_train = self.main_estimator.predict_proba(X_train, ntree_limit = self.main_estimator.get_booster().best_iteration)
                 y_pred_test = self.main_estimator.predict_proba(X_test, ntree_limit = self.main_estimator.get_booster().best_iteration)
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 y_pred_train = self.main_estimator.predict_proba(X_train)
                 y_pred_test = self.main_estimator.predict_proba(X_test)
             elif self.model_type == 'lightboost':
@@ -622,6 +622,15 @@ class AutoTrees():
                     'y':y_train, 
                     'eval_set':[(X_train_new, y_train), (X_val_new, y_val)]
                     })
+                
+        if self.model_type in ['catboost_gpu']:
+            if self.solo_model is False:
+                # Обновляем параметры обучения
+                self.main_fit_params.update({
+                    'X':X_train_new, 
+                    'y':y_train, 
+                    'eval_set':[(X_val_new, y_val)]
+                    })
 
         elif self.model_type in ['decisiontree', 'randomforest']:
             # Обновляем параметры обучения
@@ -640,7 +649,7 @@ class AutoTrees():
             feature_imp = self.main_estimator.get_booster().get_score(importance_type='gain')
             evals = self.main_estimator.evals_result()
         
-        elif self.model_type == 'catboost':
+        elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
             print('BEST ITERATION: ', self.main_estimator.get_best_iteration())
 
             best_iteration = self.main_estimator.get_best_iteration()
@@ -663,7 +672,7 @@ class AutoTrees():
         if self.main_metric in ['roc_auc', 'gini', 'delta_gini']:
             if self.model_type == 'xgboost':
                 x_test_predict = self.main_estimator.predict_proba(X_val_new, ntree_limit = self.main_estimator.get_booster().best_iteration)[:,1]
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 x_test_predict = self.main_estimator.predict_proba(X_val_new)[:,1]
             elif self.model_type == 'lightboost':
                 x_test_predict = self.main_estimator.predict_proba(X_val_new)[:,1]
@@ -673,7 +682,7 @@ class AutoTrees():
         elif self.main_metric in ['accuracy', 'mae', 'mse', 'rmse', 'mape', 'f1_macro', 'f1_micro', 'f1_weighted', 'precision_macro', 'precision_micro', 'precision_weighted', 'recall_macro', 'recall_micro', 'recall_weighted']:
             if self.model_type == 'xgboost':
                 x_test_predict = self.main_estimator.predict(X_val_new, ntree_limit = self.main_estimator.get_booster().best_iteration)
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 x_test_predict = self.main_estimator.predict(X_val_new)
             elif self.model_type == 'lightboost':
                 x_test_predict = self.main_estimator.predict(X_val_new)
@@ -683,7 +692,7 @@ class AutoTrees():
         elif self.main_metric in ['roc_auc_ovr', 'roc_auc_ovo']:
             if self.model_type == 'xgboost':
                 x_test_predict = self.main_estimator.predict_proba(X_val_new, ntree_limit = self.main_estimator.get_booster().best_iteration)
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 x_test_predict = self.main_estimator.predict_proba(X_val_new)
             elif self.model_type == 'lightboost':
                 x_test_predict = self.main_estimator.predict_proba(X_val_new)
@@ -908,7 +917,7 @@ class AutoTrees():
                 df_fi = df_fi.sort_values('mean_importance', ascending=False)
                 df_fi = df_fi.reset_index()
             
-            elif self.model_type == 'catboost':
+            elif self.model_type == 'catboost' | self.model_type == 'catboost_gpu':
                 df_fi = self._fi[0]
                 df_fi.columns = ['Feature Id', 'importance_0']
 
