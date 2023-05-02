@@ -5,14 +5,14 @@ The Autobinary library is a set of tools that allow you to automate the process 
 ## Autobinary allows you:
 -----------------
 
-  1. To do a primary exploratory analysis and process factors;
-  2. To do a primary selection of factors from all available;
-  3. To do a primary training according to the required cross-validation scheme;
+  1. To conduct a primary exploratory analysis and process factors;
+  2. To conduct a primary selection of factors from all available;
+  3. To conduct a primary training according to the required cross-validation scheme;
   4. To search for the optimal set of hyperpatmers;
-  5. To do a deep selection of factors to finalize the model;
+  5. To conduct a deep selection of factors to finalize the model;
   6. To calibrate the final model if necessary;
   7. To visualize optimization and business metrics;
-  8. To do an interpretative analysis of the factors.
+  8. To conduct an interpretative analysis of the factors.
 
 ## How to use:
 -----------------
