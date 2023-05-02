@@ -64,7 +64,7 @@ class NansAnalysis():
         """    
 
         null = pd.DataFrame(self.df.isna().sum().reset_index()).rename(columns={'index':'feature',0:'cnt_null'})
-        null['share_nans'] = (null.cnt_null/len(self.df)).round(2)
+        null['share_nans'] = (null.cnt_null/len(self.df)).round(4)
 #        display(null.sort_values('cnt_null', ascending=False).head(top))
         
         self.nans_df = null.sort_values('cnt_null', ascending=False)

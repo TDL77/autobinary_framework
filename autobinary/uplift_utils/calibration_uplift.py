@@ -70,21 +70,25 @@ class UpliftCalibration:
                 df1 = self.df[self.df[treatment] == 1]
             elif self.strategy == 'ctrl':
                 df1 = self.df[self.df[treatment] == 0]
-
-            self.woe.fit(df1[[score]], df1[[target]])
+            
+            x = df1[score].values
+            y = df1[target].values
+            
+            self.woe.fit(x, y)
 
             # преобразовываем всю изначальную выборку
-            new_df1 = self.woe.transform(self.df[[score]])
+            x_new = self.woe.transform(x)
+            new_df1 = pd.DataFrame()
+            new_df1['woe'] = x_new
+            
             df1 = pd.concat([self.df, new_df1], axis=1)
 
-            self.list_bounders = self.woe.optimal_edges.tolist()
+            self.list_bounders = list(self.woe.splits)
 
             if self.type_score == 'uplift':
-                self.list_bounders[0] = -100
-                self.list_bounders[len(self.list_bounders)-1] = 100
+                self.list_bounders = [-100] + self.list_bounders + [100]
             else:
-                self.list_bounders[0] = 0
-                self.list_bounders[len(self.list_bounders)-1] = 1
+                self.list_bounders = [0] + self.list_bounders + [1]
 
             percentiles1 = [round(p * 100 / len(self.list_bounders)) for p in range(2, len(self.list_bounders)+1)]
 

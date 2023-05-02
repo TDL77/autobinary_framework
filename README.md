@@ -1,32 +1,35 @@
-# Autobinary Framework version 1.0.10
+# Autobinary Framework version 1.0.11
 
-Библиотека Autobinary является набором инструментов, которые позволяют автоматизировать процесс построения модели для решения определенных бизнес задач.
+The Autobinary library is a set of tools that allow you to automate the process of building a model to solve certain business problems.
 
-## Что позволяет:
+## Autobinary allows you:
+-----------------
 
-  1. Провести первичный разведочный анализ и обработать факторы;
-  2. Провести первичный отбор факторов из всех доступных;
-  3. Провести первичное обучение по необходимой кросс - валидационной схеме;
-  4. Провести поиск оптимального набора гиперапатмеров;
-  5. Провести глубокий отбор факторов для финализации модели;
-  6. Провести калибровку финальной модели при необходимости;
-  7. Провести визуализацию оптимизационных и бизнес метрик;
-  8. Провести интерпретационный анализ факторов.
+  1. To conduct a primary exploratory analysis and process factors;
+  2. To conduct a primary selection of factors from all available;
+  3. To conduct a primary training according to the required cross-validation scheme;
+  4. To search for the optimal set of hyperpatmers;
+  5. To conduct a deep selection of factors to finalize the model;
+  6. To calibrate the final model if necessary;
+  7. To visualize optimization and business metrics;
+  8. To conduct an interpretative analysis of the factors.
 
-## Как использовать:
+## How to use:
+-----------------
 
-#### Сценарий с установкой:
-  1. Переместить установочный файл autobinary-1.0.10.tar.gz в необходимую папку
-  2. Выполнить установку при помощи: !pip install autobinary-1.0.10.tar.gz
-  3. Выполнить импорт библиотеки при помощи: import autobinary
+#### Installation script:
+  1. Move the installation file autobinary-1.0.10.tar.gz to the required folder
+  2. Install with: !pip install autobinary-1.0.10.tar.gz
+  3. Import the library with: import autobinary
 
 
-#### Сценарий с ручной корректировкой библиотеки:
-  1. Переместить папку autobinary на локальное пространство;
-  2. Прописать путь к папке autobinary;
-  3. Импортировать необходимые инструменты из библиотеки autobinary.
+#### Manual adjustment:
+  1. Move "autobinary" folder to local space;
+  2. Set the path to the "autobinary" folder;
+  3. Import the necessary tools from the autobinary library.
 
-## Требования:
+## Requirements:
+-----------------
 
   * pandas >= 1.3.1
   * numpy >= 1.21.5 
@@ -35,79 +38,80 @@
   * sklearn >= 0.24.2 and <1.2.0
   * pdpbox == 0.2.0
 
-## В папках репозитория приведены детальные примеры использования библиотеки:
+## The repository folders provide detailed examples of using the library:
+-----------------
 
   1. 01_Feature_vs_Target:
 
-    * Примеры анализа целевой переменной относительно фактора для задач классификации;
+    * Examples of analysis of the target variable with respect to the factor for classification problems;
 
-    * Примеры анализа целевой переменной относительно фактора для задач регрессии.
+    * Examples of analysis of the target variable relative to the factor for regression problems.
 
   2. 02_CV_importances_for_trees:
 
-    * Примеры обучения различных алгоритмов для решения задач классификации по кросс-валидационной схеме;
+    * Examples of training various algorithms for solving classification problems according to a cross-validation scheme;
     
-    * Примеры обучения различных алгоритмов для решения задач регрессии по кросс-валидационной схеме;
+    * Examples of training various algorithms for solving regression problems using a cross-validation scheme;
     
-    * Примеры обучения различных алгоритмов для решения задач мультиклассификации по кросс-валидационной схеме;
+    * Examples of training various algorithms for solving multiclassification problems using a cross-validation scheme;
 
-    * Расчет важностей факторов после обучения алгоритма;
+    * Calculation of the importance of factors after learning the algorithm;
 
   3. 03_Tuning_parameters_Optuna:
 
-    * Примеры поиска оптимального набора гиперпараметров с помощью библиотеки Optuna.
+    * Examples of finding the optimal set of hyperparameters using the Optuna library.
     
   4. 04_Explaining_output:
   
-    * Примеры интерпретации влияния факторов на целевую переменную с помощью библиотеки Shap;
+    * Examples of interpretation of the influence of factors on the target variable using the Shap library;
     
-    * Примеры интерпретации влияния факторов на целевую переменную с помощью библиотеки PDPbox.
+    * Examples of interpretation of the influence of factors on the target variable using the PDPbox library.
     
   5. 05_Uplift_models:
   
-    * Примеры Solo model решения задач uplift с необходимой кросс - валидационной схемой;
+    * Examples of Solo model for solving uplift problems with the necessary cross-validation scheme;
     
-    * Примеры Two models (Vanilla) решения задач uplift с необходимой кросс - валидационной схемой;
+    * Examples of Two models (Vanilla) for solving uplift problems with the necessary cross-validation scheme;
     
-    * Примеры Two models (DDR control) решения задач uplift с необходимой кросс - валидационной схемой;
+    * Examples of Two models (DDR control) for solving uplift problems with the necessary cross-validation scheme;
     
-    * Примеры Two models (Treatment control) решения задач uplift с необходимой кросс - валидационной схемой.
+    * Examples of Two models (Treatment control) for solving uplift problems with the necessary cross-validation scheme.
     
   6. 06_Base_uplift_calibration:
   
-    * Примеры калибровки для response задач;
+    * Calibration examples for response tasks;
     
-    * Примеры калибровки для uplift задач;
+    * Calibration examples for uplift tasks;
     
-    * Примеры калибровки для других видов задач;
+    * Calibration examples for other types of tasks;
 
   7. 07_Feature_selection:
 
-    * Примеры первичного отбора факторов из всех доступных с помощью анализа пропусков, корреляционного анализа, анализа глубины деревьев, а также метода Permutation Importance (для бинарной классификации, регрессии и мультиклассовой классификации);
+    * Examples of primary selection of factors from all available using gap analysis, correlation analysis, tree depth analysis, as well as the Permutation Importance method (for binary classification, regression and multiclass classification);
     
-    * Примеры глубокого отбора факторов с помощью методов Forward и Backward selection;
+    * Examples of deep selection of factors using the Forward and Backward selection methods;
 
-    * Примеры отбора факторов с помощью метода Target Permutation.
+    * Examples of factor selection using the Target Permutation method.
 
   8. 08_Custom_metrics:
 
-    * Примеры визуализации известных и кастомных метрик для детального понимания качества алгоритма в задачах бинарной классификации и uplift;
+    * Examples of visualization of known and custom metrics for a detailed understanding of the quality of the algorithm in binary classification and uplift tasks;
 
-    * Примеры визуализации известных и кастомных метрик для детального понимания качества алгоритма в задачах регрессии.
+    * Examples of visualization of known and custom metrics for a detailed understanding of the quality of the algorithm in regression problems.
 
   9. 09_Finalization_calibration:
 
-    * Привер финализации и калибровки модели при существующей модели и с обучением при заданных параметрах для задачи бинарной классификации;
+    * An example of the finalization and calibration of the model with the existing model and training with the given parameters for the binary classification problem;
     
-    * Привер финализации и калибровки модели при существующей модели и с обучением при заданных параметрах для задачи регрессии;
+    * An example of the finalization and calibration of the model with the existing model and training with the given parameters for the regression problem;
 
   10. 10_Full_Fitting_model:
 
-    * Пример всего процесса построения и финализации модели в ноутбуке для задачи бинарной классификации (вероятность выживаемости при крушении титаника).
+    * An example of the entire process of building and finalizing a model in a laptop for a binary classification problem (probability of surviving a Titanic crash).
 
 
-#### Авторы:
-* Василий Сизов - https://github.com/Vasily-Sizov
-* Дмитрий Тимохин - https://github.com/dmitrytimokhin
-* Павел Зеленский - https://github.com/vselenskiy777
-* Руслан Попов - https://github.com/RuslanPopov98
+#### Authors:
+* Vasily Sizov - https://github.com/Vasily-Sizov
+* Dmitry Timokhin - https://github.com/dmitrytimokhin
+* Pavel Zelenskiy - https://github.com/vselenskiy777
+* Ruslan Popov - https://github.com/RuslanPopov98

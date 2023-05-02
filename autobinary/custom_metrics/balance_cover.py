@@ -13,10 +13,12 @@ class BalanceCover:
         self.path = path
         self.name = name
 
-    def sample_describe(self):
+    def sample_describe(self, n=2):
         df = self.entr_df.copy()
         print('Всего записей в выборке: ', df.shape[0])
         print('Всего таргетов в выборке: ', df[df[self.target] == 1].shape[0])
+        print()
+        print('Баланс классов: ', round(df[df[self.target] == 1].shape[0]*100/df.shape[0], n), ' %')
     
     def _calc_balance(self, counter):
     

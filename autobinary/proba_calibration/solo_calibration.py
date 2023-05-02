@@ -260,16 +260,16 @@ class FinalModel():
 
         create_folder(path)
         if columns:
-            pickle.dump(self.num_columns, open('./{}/num_columns_final.sav'.format(path), 'wb'))
-            pickle.dump(self.cat_columns, open('./{}/cat_columns_final.sav'.format(path), 'wb'))
+            pickle.dump(self.num_columns, open('{}/num_columns_final.sav'.format(path), 'wb'))
+            pickle.dump(self.cat_columns, open('{}/cat_columns_final.sav'.format(path), 'wb'))
         if prep_pipe:
-            pickle.dump(self.prep_pipe, open('./{}/prep_pipe_final.sav'.format(path), 'wb'))
+            pickle.dump(self.prep_pipe, open('{}/prep_pipe_final.sav'.format(path), 'wb'))
         if model:
-            pickle.dump(self.model, open('./{}/model_final.sav'.format(path), 'wb'))
+            pickle.dump(self.model, open('{}/model_final.sav'.format(path), 'wb'))
         if calibration:
             if type_calibration=='iso':
-                pickle.dump(self.model_iso, open('./{}/calib_final.sav'.format(path), 'wb'))
+                pickle.dump(self.model_iso, open('{}/calib_final.sav'.format(path), 'wb'))
             elif type_calibration=='sigm':
-                pickle.dump(self.model_sigm, open('./{}/calib_final.sav'.format(path), 'wb'))
+                pickle.dump(self.model_sigm, open('{}/calib_final.sav'.format(path), 'wb'))
 
         return 'Все атрибуты сохранены!'

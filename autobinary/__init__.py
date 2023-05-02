@@ -17,20 +17,18 @@ from autobinary.other_methods import StratifiedGroupKFold
 
 from autobinary.pipe import SentColumns, base_pipe
 
-from autobinary.wing import WingOfEvidence, WingsOfEvidence
-
 from autobinary.uplift_utils import get_uplift
 from autobinary.uplift_models import TwoModelsExtra
 
 from autobinary.auto_viz import TargetPlot
 
-from autobinary.uplift_utils import UpliftCalibration, WingUplift
+from autobinary.uplift_utils import UpliftCalibration
 
 
-__version__ = '1.0.9'
+__version__ = '1.0.11'
 
 __author__ = '''
     vasily_sizov, 
-    dmitrii_timohin, 
-    pavel_pelenskii, 
+    dmitry_timokhin, 
+    pavel_zelenskiy, 
     ruslan_popov'''
