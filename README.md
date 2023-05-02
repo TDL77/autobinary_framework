@@ -2,27 +2,19 @@
 
 The Autobinary library is a set of tools that allow you to automate the process of building a model to solve certain business problems.
 
-<<<<<<< HEAD
 ## Autobinary allows you:
-=======
-## Что позволяет:
->>>>>>> 8454d07765d2d1d52a493bcc69f5b88daf2a4b6f
 -----------------
 
-  1. To conduct a primary exploratory analysis and process factors;
-  2. To conduct a primary selection of factors from all available;
-  3. To conduct a primary training according to the required cross-validation scheme;
+  1. To do a primary exploratory analysis and process factors;
+  2. To do a primary selection of factors from all available;
+  3. To do a primary training according to the required cross-validation scheme;
   4. To search for the optimal set of hyperpatmers;
-  5. To conduct a deep selection of factors to finalize the model;
+  5. To do a deep selection of factors to finalize the model;
   6. To calibrate the final model if necessary;
   7. To visualize optimization and business metrics;
-  8. To conduct an interpretative analysis of the factors.
+  8. To do an interpretative analysis of the factors.
 
-<<<<<<< HEAD
 ## How to use:
-=======
-## Как использовать:
->>>>>>> 8454d07765d2d1d52a493bcc69f5b88daf2a4b6f
 -----------------
 
 #### Installation script:
@@ -36,11 +28,7 @@ The Autobinary library is a set of tools that allow you to automate the process 
   2. Set the path to the "autobinary" folder;
   3. Import the necessary tools from the autobinary library.
 
-<<<<<<< HEAD
 ## Requirements:
-=======
-## Требования:
->>>>>>> 8454d07765d2d1d52a493bcc69f5b88daf2a4b6f
 -----------------
 
   * pandas >= 1.3.1
@@ -50,11 +38,7 @@ The Autobinary library is a set of tools that allow you to automate the process 
   * sklearn >= 0.24.2 and <1.2.0
   * pdpbox == 0.2.0
 
-<<<<<<< HEAD
 ## The repository folders provide detailed examples of using the library:
-=======
-## В папках репозитория приведены детальные примеры использования библиотеки:
->>>>>>> 8454d07765d2d1d52a493bcc69f5b88daf2a4b6f
 -----------------
 
   1. 01_Feature_vs_Target:
