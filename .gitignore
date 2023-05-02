@@ -3,3 +3,8 @@
 data/
 PDPbox-0.2.0.tar.gz
 requirements.txt
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+**/__pycache__

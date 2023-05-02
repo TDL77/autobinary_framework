@@ -2,7 +2,11 @@
 
 The Autobinary library is a set of tools that allow you to automate the process of building a model to solve certain business problems.
 
+<<<<<<< HEAD
 ## Autobinary allows you:
+=======
+## Что позволяет:
+>>>>>>> 8454d07765d2d1d52a493bcc69f5b88daf2a4b6f
 -----------------
 
   1. To conduct a primary exploratory analysis and process factors;
@@ -14,7 +18,11 @@ The Autobinary library is a set of tools that allow you to automate the process 
   7. To visualize optimization and business metrics;
   8. To conduct an interpretative analysis of the factors.
 
+<<<<<<< HEAD
 ## How to use:
+=======
+## Как использовать:
+>>>>>>> 8454d07765d2d1d52a493bcc69f5b88daf2a4b6f
 -----------------
 
 #### Installation script:
@@ -28,7 +36,11 @@ The Autobinary library is a set of tools that allow you to automate the process 
   2. Set the path to the "autobinary" folder;
   3. Import the necessary tools from the autobinary library.
 
+<<<<<<< HEAD
 ## Requirements:
+=======
+## Требования:
+>>>>>>> 8454d07765d2d1d52a493bcc69f5b88daf2a4b6f
 -----------------
 
   * pandas >= 1.3.1
@@ -38,7 +50,11 @@ The Autobinary library is a set of tools that allow you to automate the process 
   * sklearn >= 0.24.2 and <1.2.0
   * pdpbox == 0.2.0
 
+<<<<<<< HEAD
 ## The repository folders provide detailed examples of using the library:
+=======
+## В папках репозитория приведены детальные примеры использования библиотеки:
+>>>>>>> 8454d07765d2d1d52a493bcc69f5b88daf2a4b6f
 -----------------
 
   1. 01_Feature_vs_Target:
